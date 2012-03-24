@@ -76,6 +76,7 @@ public class FacetDataCache<T> implements Serializable {
 	public void load(String fieldName,IndexReader reader,TermListFactory<T> listFactory) throws IOException
   {
     String field = fieldName.intern();
+    boolean isArticleId = "article-id".equals(field);
     int maxDoc = reader.maxDoc();
 
     BigSegmentedArray order = this.orderArray;
@@ -126,7 +127,25 @@ public class FacetDataCache<T> implements Serializable {
           throw new RuntimeException("there are more terms than "
               + "documents in field \"" + field
               + "\", but it's impossible to sort on " + "tokenized fields");
-        list.add(term.text());
+        if (isArticleId)
+        {
+          String articleId = term.text();
+          if (articleId != null
+              && articleId.length() > 0
+              && Long.parseLong(articleId) < 0)
+          {
+            logger.warn("Ignore a negative article-id: " + articleId);
+            continue;
+          }
+          else
+          {
+            list.add(articleId);
+          }
+        }
+        else
+        {
+          list.add(term.text());
+        }
         termDocs.seek(termEnum);
         // freqList.add(termEnum.docFreq()); // doesn't take into account
         // deldocs
