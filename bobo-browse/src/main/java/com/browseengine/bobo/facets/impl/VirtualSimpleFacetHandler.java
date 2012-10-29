@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.lucene.index.TermDocs;
@@ -48,7 +49,7 @@ public class VirtualSimpleFacetHandler extends SimpleFacetHandler
   public FacetDataCache load(BoboIndexReader reader) throws IOException
   {
     int doc = -1;
-    TreeMap<Object, LinkedList<Integer>> dataMap = null;
+    SortedMap<Object, LinkedList<Integer>> dataMap = null;
     LinkedList<Integer> docList = null;
 
     int nullMinId = -1;
@@ -135,7 +136,6 @@ public class VirtualSimpleFacetHandler extends SimpleFacetHandler
     {
       termDocs.close();
     }
-    _facetDataFetcher.cleanup(reader);
 
     int maxDoc = reader.maxDoc();
     int size = dataMap == null ? 1:(dataMap.size() + 1);
@@ -160,7 +160,7 @@ public class VirtualSimpleFacetHandler extends SimpleFacetHandler
       Integer docId;
       for (Map.Entry<Object, LinkedList<Integer>> entry : dataMap.entrySet())
       {
-        list.add(list.format(entry.getKey()));
+        list.addRaw(entry.getKey());
         docList = entry.getValue();
         freqs[i] = docList.size();
         minIDs[i] = docList.get(0);
@@ -178,5 +178,15 @@ public class VirtualSimpleFacetHandler extends SimpleFacetHandler
     FacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs,
       maxIDs, TermCountSize.large);
     return dataCache;
+  }
+
+  /**
+   * @see com.browseengine.bobo.facets.FacetHandler#cleanup
+   */
+  @Override
+  public void cleanup(BoboIndexReader reader)
+  {
+    System.out.println(">>> cleaning up for " + reader);
+    _facetDataFetcher.cleanup(reader);
   }
 }

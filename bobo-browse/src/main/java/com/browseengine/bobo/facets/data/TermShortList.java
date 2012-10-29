@@ -49,6 +49,12 @@ public class TermShortList extends TermNumberList<Short>
     return ((ShortArrayList) _innerList).add(item);
   }
 
+	@Override
+	public boolean addRaw(Object o)
+  {
+		return ((ShortArrayList) _innerList).add(((Number)o).shortValue());
+	}
+
   @Override
   public void clear()
   {

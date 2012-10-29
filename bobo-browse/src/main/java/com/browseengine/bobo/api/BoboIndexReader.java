@@ -434,6 +434,14 @@ public class BoboIndexReader extends FilterIndexReader
       loadFacetHandler(name, loaded, visited, workArea);
     }
 
+    for (FacetHandler<?> handler : _facetHandlerMap.values())
+    {
+      if (handler != null)
+      {
+        handler.cleanup(this);
+      }
+    }
+
     for(String name : toBeRemoved)
     {
       _facetHandlerMap.remove(name);
