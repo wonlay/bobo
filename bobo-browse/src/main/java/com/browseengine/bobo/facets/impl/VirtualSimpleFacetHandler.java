@@ -186,7 +186,6 @@ public class VirtualSimpleFacetHandler extends SimpleFacetHandler
   @Override
   public void cleanup(BoboIndexReader reader)
   {
-    System.out.println(">>> cleaning up for " + reader);
     _facetDataFetcher.cleanup(reader);
   }
 }
